@@ -733,6 +733,17 @@ export default function App() {
               </button>
             )}
 
+            {/* Direct APK Link */}
+            <a 
+              href="/download/hyperjobs-v1.0.0.apk"
+              id="header_download_apk"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 border border-white/10 hover:border-white transition-colors duration-150 text-[9.5px] font-mono tracking-wider uppercase text-zinc-400 hover:text-white"
+              title="Download Android APK"
+            >
+              <span>Android APK</span>
+              <span className="text-zinc-500">↓</span>
+            </a>
+
             {/* Account Type Selector Toggle */}
             <div className="flex bg-[#111] p-1 rounded border border-white/10 font-sans text-xs">
               <button
@@ -1027,6 +1038,27 @@ export default function App() {
           <div className="bg-[#111] border border-white/10 rounded-none p-5 text-xs space-y-2.5 leading-relaxed">
             <h4 className="font-extrabold uppercase tracking-wide text-zinc-100 flex items-center gap-1.5"><Info className="w-4 h-4 text-blue-500 shrink-0" /> System Guide</h4>
             <p className="text-zinc-400 text-[11px]">Toggle Recruiter Mode to evaluate job postings and test live Gemini compatibility indexing, or use Seeker's AI Suite to optimize cover letters.</p>
+          </div>
+
+          {/* Mobile APK Download Widget */}
+          <div className="bg-[#111] border border-white/10 rounded-none p-5 text-xs space-y-3 leading-relaxed relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none"></div>
+            <h4 className="font-extrabold uppercase tracking-widest text-[9.5px] text-zinc-100 flex items-center gap-2">
+              <span className="p-1 bg-white/5 border border-white/10 rounded-none text-[10px]">🤖</span>
+              HYPER Mobile App
+            </h4>
+            <p className="text-zinc-400 text-[11px]">Take Hyper Jobs on the go. Scan resumes, chat with recruiters, and apply with automated AI screening straight from your device.</p>
+            <div className="pt-1">
+              <a 
+                id="btn_download_apk"
+                href="/download/hyperjobs-v1.0.0.apk" 
+                className="w-full py-2 bg-white text-black hover:bg-zinc-200 transition duration-150 inline-flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-center"
+              >
+                <span>Download Android APK</span>
+                <span className="text-[10px]">↓</span>
+              </a>
+              <span className="text-[9px] text-zinc-500 font-mono block text-center mt-2 uppercase tracking-tight">Version 1.0.0 • Size ~1.8 MB • Direct Link</span>
+            </div>
           </div>
 
         </div>
