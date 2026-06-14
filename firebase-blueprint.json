@@ -1,0 +1,362 @@
+{
+  "entities": {
+    "SeekerProfile": {
+      "title": "SeekerProfile",
+      "description": "Represents a job seeker's professional profile, history, education, and credentials.",
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "description": "The complete name of the job seeker."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the job seeker."
+        },
+        "phone": {
+          "type": "string",
+          "description": "The phone contact of the job seeker."
+        },
+        "avatar": {
+          "type": "string",
+          "description": "URL to the seeker's profile picture."
+        },
+        "title": {
+          "type": "string",
+          "description": "Professional headline or current job title."
+        },
+        "bio": {
+          "type": "string",
+          "description": "Short vocational bio or pitch."
+        },
+        "skills": {
+          "type": "array",
+          "description": "List of professional skills."
+        },
+        "experience": {
+          "type": "array",
+          "description": "List of past or current work experiences."
+        },
+        "education": {
+          "type": "array",
+          "description": "List of degrees and educational institutions."
+        },
+        "portfolioLinks": {
+          "type": "array",
+          "description": "Web portfolio or workspace connections."
+        },
+        "resumeText": {
+          "type": "string",
+          "description": "Extracted string representation of CV."
+        },
+        "resumeFileName": {
+          "type": "string",
+          "description": "Source name of uploaded file."
+        }
+      },
+      "required": ["fullName", "email"]
+    },
+    "CompanyProfile": {
+      "title": "CompanyProfile",
+      "description": "Represents professional branding parameters of an employer or recruiter company.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The trade name of the brand."
+        },
+        "logo": {
+          "type": "string",
+          "description": "Logo emoji or image URL."
+        },
+        "tagline": {
+          "type": "string",
+          "description": "Brief brand motto or focus."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed background of operations."
+        },
+        "rating": {
+          "type": "number",
+          "description": "Employer ranking index."
+        },
+        "industry": {
+          "type": "string",
+          "description": "Associated vocational sector."
+        },
+        "size": {
+          "type": "string",
+          "description": "Count range of employees."
+        },
+        "website": {
+          "type": "string",
+          "description": "Associated corporate URL."
+        },
+        "location": {
+          "type": "string",
+          "description": "Base corporate headquarters location."
+        }
+      },
+      "required": ["name", "industry", "location"]
+    },
+    "JobPost": {
+      "title": "JobPost",
+      "description": "Represents an active job vacancy broadcast by an employer.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The title of the vacancy."
+        },
+        "companyName": {
+          "type": "string",
+          "description": "The name of the company broadcasting this vacancy."
+        },
+        "companyLogo": {
+          "type": "string",
+          "description": "Associated company's brand logo or emblem."
+        },
+        "location": {
+          "type": "string",
+          "description": "Geographical target or remote configuration."
+        },
+        "salaryRange": {
+          "type": "string",
+          "description": "The salary compensation range."
+        },
+        "jobType": {
+          "type": "string",
+          "description": "E.g. Remote, Hybrid, Part-time, Full-time."
+        },
+        "industry": {
+          "type": "string",
+          "description": "Primary industry sector."
+        },
+        "experienceLevel": {
+          "type": "string",
+          "description": "Scope index of required experience."
+        },
+        "description": {
+          "type": "string",
+          "description": "Full text layout of expectations and objectives."
+        },
+        "requirements": {
+          "type": "array",
+          "description": "List of core criteria."
+        },
+        "benefits": {
+          "type": "array",
+          "description": "List of perks and health benefits."
+        },
+        "postedAt": {
+          "type": "string",
+          "description": "Raw string date of release."
+        },
+        "employerId": {
+          "type": "string",
+          "description": "The UID identifier of the employer posting this job."
+        },
+        "viewsCount": {
+          "type": "integer",
+          "description": "Views tally of seeker interactions."
+        },
+        "appCount": {
+          "type": "integer",
+          "description": "Total count of applications."
+        }
+      },
+      "required": ["title", "companyName", "description", "employerId"]
+    },
+    "JobApplication": {
+      "title": "JobApplication",
+      "description": "Represents a single job seeker application submission targeting a vacant job.",
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string",
+          "description": "The document identifier of the job post."
+        },
+        "jobTitle": {
+          "type": "string",
+          "description": "The title of the job applied for."
+        },
+        "companyName": {
+          "type": "string",
+          "description": "The company name of the job post."
+        },
+        "companyLogo": {
+          "type": "string",
+          "description": "Logo of the company."
+        },
+        "seekerId": {
+          "type": "string",
+          "description": "The UID identifier of the seeker candidate."
+        },
+        "seekerName": {
+          "type": "string",
+          "description": "The candidate's full name."
+        },
+        "seekerEmail": {
+          "type": "string",
+          "description": "The candidate's contact email."
+        },
+        "applyDate": {
+          "type": "string",
+          "description": "String date of application."
+        },
+        "status": {
+          "type": "string",
+          "description": "The active status within the hiring pipeline."
+        },
+        "coverLetter": {
+          "type": "string",
+          "description": "Candidate cover letter pitch."
+        },
+        "fitScore": {
+          "type": "integer",
+          "description": "The optional AI matching alignment score."
+        },
+        "fitSummary": {
+          "type": "string",
+          "description": "Summary rationale of the compatibility score."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Recruiter-specific screening evaluation notes."
+        }
+      },
+      "required": ["jobId", "seekerId", "status", "seekerEmail", "applyDate"]
+    },
+    "ChatSession": {
+      "title": "ChatSession",
+      "description": "Represents an active direct messaging communication room linking a candidate and employer recruiter.",
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string",
+          "description": "Identifies the core job context."
+        },
+        "jobTitle": {
+          "type": "string",
+          "description": "The title of the core job context."
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Name of the recruiter company."
+        },
+        "seekerId": {
+          "type": "string",
+          "description": "Identity of the candidate seeker."
+        },
+        "seekerName": {
+          "type": "string",
+          "description": "Name of the candidate seeker."
+        },
+        "recruiterId": {
+          "type": "string",
+          "description": "Identity of the recruiter employer."
+        },
+        "lastMessage": {
+          "type": "string",
+          "description": "The last message transmitted."
+        },
+        "lastUpdated": {
+          "type": "string",
+          "description": "Raw string date/time of the last transmit."
+        }
+      },
+      "required": ["jobId", "seekerId", "recruiterId"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "A single text message inside a communication chat room.",
+      "type": "object",
+      "properties": {
+        "chatId": {
+          "type": "string",
+          "description": "The parent chat session document identifier."
+        },
+        "senderId": {
+          "type": "string",
+          "description": "The ID of the sender user."
+        },
+        "senderType": {
+          "type": "string",
+          "description": "seeker or recruiter."
+        },
+        "senderName": {
+          "type": "string",
+          "description": "Name of the sender."
+        },
+        "text": {
+          "type": "string",
+          "description": "Literal characters of message content."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "String date/time message was sent."
+        }
+      },
+      "required": ["chatId", "senderId", "senderType", "text"]
+    },
+    "UserNotification": {
+      "title": "UserNotification",
+      "description": "A personalized notification to broadcast matching jobs, pipeline status changes, or direct message received alerts.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Headline of the alert notification."
+        },
+        "description": {
+          "type": "string",
+          "description": "Subtext description of details."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Vocational timestamp label."
+        },
+        "read": {
+          "type": "boolean",
+          "description": "Track whether candidate reviewed this alert."
+        },
+        "type": {
+          "type": "string",
+          "description": "Category: job, application, or message."
+        }
+      },
+      "required": ["title", "description", "read", "type"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "SeekerProfile",
+      "description": "Primary user profile document containing seeker skills and portfolio coordinates."
+    },
+    "/companies/{companyId}": {
+      "schema": "CompanyProfile",
+      "description": "Primary company detail container displaying office credentials and industrial parameters."
+    },
+    "/jobs/{jobId}": {
+      "schema": "JobPost",
+      "description": "Active global vacancy positions broadcasted to search."
+    },
+    "/applications/{applicationId}": {
+      "schema": "JobApplication",
+      "description": "Employment applications connecting a seeker candidate to a job post."
+    },
+    "/chats/{chatId}": {
+      "schema": "ChatSession",
+      "description": "Direct message channels linking seeker candidates with recruiters."
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "Chronological direct communication log entries between seeker candidates and recruiters."
+    },
+    "/users/{userId}/notifications/{notificationId}": {
+      "schema": "UserNotification",
+      "description": "Personalized system state alerts regarding job match assessments and screening statuses."
+    }
+  }
+}

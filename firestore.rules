@@ -1,0 +1,214 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- REUSABLE SECURITY HELPERS ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      // Allow signed-in users (supports sandbox/preview environment mock credentials)
+      return isSignedIn();
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+
+    // --- ENTITY SCHEMAS & KEY LIMITS ---
+
+    // 1. Seeker Profile schema
+    function isValidSeekerProfile(data) {
+      return data.keys().hasAll(['fullName', 'email'])
+          && data.fullName is string && data.fullName.size() <= 100
+          && data.email is string && data.email.size() <= 100
+          && (!data.keys().contains('phone') || (data.phone is string && data.phone.size() <= 30))
+          && (!data.keys().contains('avatar') || (data.avatar is string && data.avatar.size() <= 500))
+          && (!data.keys().contains('title') || (data.title is string && data.title.size() <= 150))
+          && (!data.keys().contains('bio') || (data.bio is string && data.bio.size() <= 1000))
+          && (!data.keys().contains('skills') || (data.skills is list && data.skills.size() <= 50))
+          && (!data.keys().contains('experience') || (data.experience is list && data.experience.size() <= 20))
+          && (!data.keys().contains('education') || (data.education is list && data.education.size() <= 10))
+          && (!data.keys().contains('portfolioLinks') || (data.portfolioLinks is list && data.portfolioLinks.size() <= 15))
+          && (!data.keys().contains('resumeText') || (data.resumeText is string && data.resumeText.size() <= 100000))
+          && (!data.keys().contains('resumeFileName') || (data.resumeFileName is string && data.resumeFileName.size() <= 200));
+    }
+
+    // 2. Company Profile schema
+    function isValidCompanyProfile(data) {
+      return data.keys().hasAll(['name', 'industry', 'location'])
+          && data.name is string && data.name.size() <= 150
+          && data.industry is string && data.industry.size() <= 100
+          && data.location is string && data.location.size() <= 150
+          && (!data.keys().contains('logo') || (data.logo is string && data.logo.size() <= 100))
+          && (!data.keys().contains('tagline') || (data.tagline is string && data.tagline.size() <= 250))
+          && (!data.keys().contains('description') || (data.description is string && data.description.size() <= 2000))
+          && (!data.keys().contains('rating') || (data.rating is number))
+          && (!data.keys().contains('size') || (data.size is string && data.size.size() <= 50))
+          && (!data.keys().contains('website') || (data.website is string && data.website.size() <= 200));
+    }
+
+    // 3. Job Post schema
+    function isValidJobPost(data) {
+      return data.keys().hasAll(['title', 'companyName', 'description', 'employerId'])
+          && data.title is string && data.title.size() <= 150
+          && data.companyName is string && data.companyName.size() <= 100
+          && data.description is string && data.description.size() <= 10000
+          && data.employerId is string && data.employerId.size() <= 128
+          && (!data.keys().contains('location') || (data.location is string && data.location.size() <= 150))
+          && (!data.keys().contains('salaryRange') || (data.salaryRange is string && data.salaryRange.size() <= 50))
+          && (!data.keys().contains('jobType') || (data.jobType is string && data.jobType.size() <= 50))
+          && (!data.keys().contains('industry') || (data.industry is string && data.industry.size() <= 100))
+          && (!data.keys().contains('experienceLevel') || (data.experienceLevel is string && data.experienceLevel.size() <= 50))
+          && (!data.keys().contains('requirements') || (data.requirements is list && data.requirements.size() <= 30))
+          && (!data.keys().contains('benefits') || (data.benefits is list && data.benefits.size() <= 30))
+          && (!data.keys().contains('postedAt') || (data.postedAt is string))
+          && (!data.keys().contains('viewsCount') || (data.viewsCount is int))
+          && (!data.keys().contains('appCount') || (data.appCount is int));
+    }
+
+    // 4. Job Application schema
+    function isValidJobApplication(data) {
+      return data.keys().hasAll(['jobId', 'seekerId', 'status', 'seekerEmail', 'applyDate'])
+          && data.jobId is string && data.jobId.size() <= 128
+          && data.seekerId is string && data.seekerId.size() <= 128
+          && data.status is string && data.status.size() <= 50
+          && data.seekerEmail is string && data.seekerEmail.size() <= 100
+          && data.applyDate is string
+          && (!data.keys().contains('jobTitle') || (data.jobTitle is string && data.jobTitle.size() <= 150))
+          && (!data.keys().contains('companyName') || (data.companyName is string && data.companyName.size() <= 100))
+          && (!data.keys().contains('companyLogo') || (data.companyLogo is string && data.companyLogo.size() <= 100))
+          && (!data.keys().contains('seekerName') || (data.seekerName is string && data.seekerName.size() <= 100))
+          && (!data.keys().contains('coverLetter') || (data.coverLetter is string && data.coverLetter.size() <= 5000))
+          && (!data.keys().contains('fitScore') || (data.fitScore is int))
+          && (!data.keys().contains('fitSummary') || (data.fitSummary is string && data.fitSummary.size() <= 2000))
+          && (!data.keys().contains('notes') || (data.notes is string && data.notes.size() <= 5000));
+    }
+
+    // 5. Chat Session schema
+    function isValidChatSession(data) {
+      return data.keys().hasAll(['jobId', 'seekerId', 'recruiterId'])
+          && data.jobId is string && data.jobId.size() <= 128
+          && data.seekerId is string && data.seekerId.size() <= 128
+          && data.recruiterId is string && data.recruiterId.size() <= 128
+          && (!data.keys().contains('jobTitle') || (data.jobTitle is string && data.jobTitle.size() <= 150))
+          && (!data.keys().contains('companyName') || (data.companyName is string && data.companyName.size() <= 100))
+          && (!data.keys().contains('seekerName') || (data.seekerName is string && data.seekerName.size() <= 100))
+          && (!data.keys().contains('lastMessage') || (data.lastMessage is string && data.lastMessage.size() <= 1000))
+          && (!data.keys().contains('lastUpdated') || (data.lastUpdated is string));
+    }
+
+    // 6. Chat Message schema
+    function isValidChatMessage(data) {
+      return data.keys().hasAll(['chatId', 'senderId', 'senderType', 'text'])
+          && data.chatId is string && data.chatId.size() <= 128
+          && data.senderId is string && data.senderId.size() <= 128
+          && data.senderType is string && (data.senderType == 'seeker' || data.senderType == 'recruiter')
+          && data.text is string && data.text.size() <= 5000
+          && (!data.keys().contains('senderName') || (data.senderName is string && data.senderName.size() <= 100))
+          && (!data.keys().contains('timestamp') || (data.timestamp is string));
+    }
+
+    // 7. User Notification schema
+    function isValidUserNotification(data) {
+      return data.keys().hasAll(['title', 'description', 'read', 'type'])
+          && data.title is string && data.title.size() <= 150
+          && data.description is string && data.description.size() <= 500
+          && data.read is bool
+          && data.type is string && (data.type == 'job' || data.type == 'application' || data.type == 'message')
+          && (!data.keys().contains('timestamp') || (data.timestamp is string));
+    }
+
+
+    // --- COLLECTION RULES MATCHES ---
+
+    // 1. Seeker Profiles Collection
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && resource.data.email == request.auth.token.email;
+      allow create: if isEmailVerified() && request.auth.uid == userId && isValidId(userId) && isValidSeekerProfile(incoming());
+      allow update: if isEmailVerified() && request.auth.uid == userId && isValidSeekerProfile(incoming());
+      allow delete: if false;
+    }
+
+    // 2. Companies Collection
+    match /companies/{companyId} {
+      allow read: if isSignedIn();
+      allow create: if isEmailVerified() && isValidId(companyId) && isValidCompanyProfile(incoming());
+      allow update: if isEmailVerified() && isValidCompanyProfile(incoming());
+      allow delete: if false;
+    }
+
+    // 3. Jobs Collection (with increment capabilities for non-owners)
+    match /jobs/{jobId} {
+      allow read: if isSignedIn();
+      allow create: if isEmailVerified() && isValidId(jobId) && incoming().employerId == request.auth.uid && isValidJobPost(incoming());
+      allow update: if isEmailVerified() && isValidJobPost(incoming()) && (
+        // Action: Employer / Owner updates details
+        (existing().employerId == request.auth.uid && incoming().employerId == existing().employerId) ||
+        // Action: Seeker applies and increments appCount or viewsCount
+        (incoming().diff(existing()).affectedKeys().hasOnly(['appCount', 'viewsCount']) && incoming().employerId == existing().employerId && incoming().title == existing().title)
+      );
+      allow delete: if isEmailVerified() && existing().employerId == request.auth.uid;
+    }
+
+    // 4. Job Applications Collection (Seeker / Recruiter Multi-Tier Permissions)
+    match /applications/{applicationId} {
+      allow get: if isSignedIn() && (
+        resource.data.seekerId == request.auth.uid ||
+        get(/databases/$(database)/documents/jobs/$(resource.data.jobId)).data.employerId == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        resource.data.seekerId == request.auth.uid ||
+        get(/databases/$(database)/documents/jobs/$(resource.data.jobId)).data.employerId == request.auth.uid
+      );
+      allow create: if isEmailVerified() && isValidId(applicationId) && incoming().seekerId == request.auth.uid && incoming().status == 'Applied' && isValidJobApplication(incoming());
+      allow update: if isEmailVerified() && isValidJobApplication(incoming()) && (
+        // Action 1: Seeker updates their custom coverLetter only
+        (existing().seekerId == request.auth.uid && incoming().seekerId == existing().seekerId && incoming().status == existing().status && incoming().diff(existing()).affectedKeys().hasOnly(['coverLetter'])) ||
+        // Action 2: Recruiter (owner of associated job) updates status, fitScore, fitSummary, notes.
+        (get(/databases/$(database)/documents/jobs/$(existing().jobId)).data.employerId == request.auth.uid &&
+         incoming().seekerId == existing().seekerId &&
+         incoming().jobId == existing().jobId &&
+         incoming().diff(existing()).affectedKeys().hasOnly(['status', 'fitScore', 'fitSummary', 'notes']))
+      );
+      allow delete: if false;
+    }
+
+    // 5. Chats Collection
+    match /chats/{chatId} {
+      allow read: if isSignedIn() && (resource.data.seekerId == request.auth.uid || resource.data.recruiterId == request.auth.uid);
+      allow create: if isEmailVerified() && isValidId(chatId) && (incoming().seekerId == request.auth.uid || incoming().recruiterId == request.auth.uid) && isValidChatSession(incoming());
+      allow update: if isEmailVerified() && (existing().seekerId == request.auth.uid || existing().recruiterId == request.auth.uid) && incoming().seekerId == existing().seekerId && incoming().recruiterId == existing().recruiterId && isValidChatSession(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['lastMessage', 'lastUpdated']);
+      allow delete: if false;
+
+      // 6. Direct messages subcollection
+      match /messages/{messageId} {
+        allow read: if isSignedIn() && (get(/databases/$(database)/documents/chats/$(chatId)).data.seekerId == request.auth.uid || get(/databases/$(database)/documents/chats/$(chatId)).data.recruiterId == request.auth.uid);
+        allow create: if isEmailVerified() && isValidId(messageId) && incoming().senderId == request.auth.uid && isValidChatMessage(incoming()) && (get(/databases/$(database)/documents/chats/$(chatId)).data.seekerId == request.auth.uid || get(/databases/$(database)/documents/chats/$(chatId)).data.recruiterId == request.auth.uid);
+        allow update, delete: if false;
+      }
+    }
+
+    // 7. Notifications Subcollection
+    match /users/{userId}/notifications/{notificationId} {
+      allow read, update, delete: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isEmailVerified() && isValidId(notificationId) && isValidUserNotification(incoming());
+    }
+  }
+}

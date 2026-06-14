@@ -1,0 +1,6 @@
+{
+  "name": "Hyper Jobs",
+  "description": "A modern career marketplace matching job seekers with recruiter opportunities using Gemini AI recommendations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
